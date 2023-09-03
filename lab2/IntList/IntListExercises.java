@@ -66,17 +66,23 @@ public class IntListExercises {
      * @return True if there was an update to the list
      */
     public static boolean squarePrimes(IntList lst) {
+        return squarePrimes(lst, false);
+    }
+
+    // I wrapped(using helper func) it, then I could only pass a param of lst
+    private static boolean squarePrimes(IntList lst, boolean isSquare) {
         // Base Case: we have reached the end of the list
         if (lst == null) {
-            return false;
+            return isSquare;
         }
 
         boolean currElemIsPrime = Primes.isPrime(lst.first);
 
         if (currElemIsPrime) {
             lst.first *= lst.first;
+            isSquare = true;
         }
 
-        return currElemIsPrime || squarePrimes(lst.rest);
+        return squarePrimes(lst.rest, isSquare);
     }
 }
