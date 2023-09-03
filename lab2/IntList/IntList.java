@@ -1,74 +1,246 @@
-package IntList;
+import java.util.Formatter;
 
+/**
+ * A naked recursive list of integers, similar to what we saw in lecture 3, but
+ * with a large number of additional methods.
+ *
+ * @author P. N. Hilfinger, with some modifications by Josh Hug and melaniecebula
+ *         [Do not modify this file.]
+ */
 public class IntList {
+    /**
+     * First element of list.
+     */
     public int first;
+    /**
+     * Remaining elements of list.
+     */
     public IntList rest;
 
-    public IntList(int f, IntList r) {
-        first = f;
-        rest = r;
+    /**
+     * A List with first FIRST0 and rest REST0.
+     */
+    public IntList(int first0, IntList rest0) {
+        first = first0;
+        rest = rest0;
     }
 
-    /** Return the size of the list using... recursion! */
-    public int size() {
-        if (rest == null) {
-            return 1;
-        }
-        return 1 + this.rest.size();
+    /**
+     * A List with null rest, and first = 0.
+     */
+    public IntList() {
+    /* NOTE: public IntList () { }  would also work. */
+        this(0, null);
     }
 
-    /** Return the size of the list using no recursion! */
-    public int iterativeSize() {
-        IntList p = this;
-        int totalSize = 0;
-        while (p != null) {
-            totalSize += 1;
-            p = p.rest;
-        }
-        return totalSize;
-    }
+    /**
+     * Returns a list equal to L with all elements squared. Destructive.
+     */
+    public static void dSquareList(IntList L) {
 
-    /** Returns the ith item of this IntList. */
-    public int get(int i) {
-        if (i == 0) {
-            return first;
-        }
-        return rest.get(i - 1);
-    }
-
-    /** Method to return a string representation of an IntList */
-    public String toString() {
-        if (rest == null) {
-            // Converts an Integer to a String!
-            return String.valueOf(first);
-        } else {
-            return first + " -> " + rest.toString();
+        while (L != null) {
+            L.first = L.first * L.first;
+            L = L.rest;
         }
     }
 
     /**
-     * Method to create an IntList from an argument list.
-     * You don't have to understand this code. We have it here
-     * because it's convenient with testing. It's used like this:
-     *
-     * IntList myList = IntList.of(1, 2, 3, 4, 5);
-     * will create an IntList 1 -> 2 -> 3 -> 4 -> 5 -> null.
-     *
-     * You can pass in any number of arguments to IntList.of and it will work:
-     * IntList mySmallerList = IntList.of(1, 4, 9);
+     * Returns a list equal to L with all elements squared. Non-destructive.
      */
-    public static IntList of(int ...argList) {
-        if (argList.length == 0)
+    public static IntList squareListIterative(IntList L) {
+        if (L == null) {
             return null;
-        int[] restList = new int[argList.length - 1];
-        System.arraycopy(argList, 1, restList, 0, argList.length - 1);
-        return new IntList(argList[0], IntList.of(restList));
+        }
+        IntList res = new IntList(L.first * L.first, null);
+        IntList ptr = res;
+        L = L.rest;
+        while (L != null) {
+            ptr.rest = new IntList(L.first * L.first, null);
+            L = L.rest;
+            ptr = ptr.rest;
+        }
+        return res;
     }
 
-    public static IntList catenate(IntList A,IntList B)
-    {
-        if(A == null)//如果A为空，那么就可以在后面直接把B接上去
+    /**
+     * Returns a list equal to L with all elements squared. Non-destructive.
+     */
+    public static IntList squareListRecursive(IntList L) {
+        if (L == null) {
+            return null;
+        }
+        return new IntList(L.first * L.first, squareListRecursive(L.rest));
+    }
+
+    /** DO NOT MODIFY ANYTHING ABOVE THIS LINE! */
+
+
+    /**
+     * Returns a list consisting of the elements of A followed by the
+     * *  elements of B.  May modify items of A. Don't use 'new'.
+     */
+
+    public static IntList dcatenate(IntList A, IntList B) {
+        if(A == null){
             return B;
-        return new IntList(A.first,catenate(A.rest,B));//新建的一个链表
+        }
+        IntList ptr = A;
+        while(ptr.rest != null){
+            ptr = ptr.rest;
+        }
+        ptr.rest = B;
+        return A;
+    }
+
+    /**
+     * Returns a list consisting of the elements of A followed by the
+     * * elements of B.  May NOT modify items of A.  Use 'new'.
+     */
+    public static IntList catenate(IntList A, IntList B) {
+        if(A == null){
+            return B;
+        }
+        if(A.rest == null){
+            return new IntList(A.first, B);
+        }
+        return new IntList(A.first, catenate(A.rest, B));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /**
+     * DO NOT MODIFY ANYTHING BELOW THIS LINE! Many of the concepts below here
+     * will be introduced later in the course or feature some form of advanced
+     * trickery which we implemented to help make your life a little easier for
+     * the lab.
+     */
+
+    @Override
+    public int hashCode() {
+        return first;
+    }
+
+    /**
+     * Returns a new IntList containing the ints in ARGS. You are not
+     * expected to read or understand this method.
+     */
+    public static IntList of(Integer... args) {
+        IntList result, p;
+
+        if (args.length > 0) {
+            result = new IntList(args[0], null);
+        } else {
+            return null;
+        }
+
+        int k;
+        for (k = 1, p = result; k < args.length; k += 1, p = p.rest) {
+            p.rest = new IntList(args[k], null);
+        }
+        return result;
+    }
+
+    /**
+     * Returns true iff X is an IntList containing the same sequence of ints
+     * as THIS. Cannot handle IntLists with cycles. You are not expected to
+     * read or understand this method.
+     */
+    public boolean equals(Object x) {
+        if (!(x instanceof IntList)) {
+            return false;
+        }
+        IntList L = (IntList) x;
+        IntList p;
+
+        for (p = this; p != null && L != null; p = p.rest, L = L.rest) {
+            if (p.first != L.first) {
+                return false;
+            }
+        }
+        if (p != null || L != null) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * If a cycle exists in the IntList, this method
+     * returns an integer equal to the item number of the location where the
+     * cycle is detected.
+     * <p>
+     * If there is no cycle, the number 0 is returned instead. This is a
+     * utility method for lab2. You are not expected to read, understand, or
+     * even use this method. The point of this method is so that if you convert
+     * an IntList into a String and that IntList has a loop, your computer
+     * doesn't get stuck in an infinite loop.
+     */
+
+    private int detectCycles(IntList A) {
+        IntList tortoise = A;
+        IntList hare = A;
+
+        if (A == null) {
+            return 0;
+        }
+
+        int cnt = 0;
+
+
+        while (true) {
+            cnt++;
+            if (hare.rest != null) {
+                hare = hare.rest.rest;
+            } else {
+                return 0;
+            }
+
+            tortoise = tortoise.rest;
+
+            if (tortoise == null || hare == null) {
+                return 0;
+            }
+
+            if (hare == tortoise) {
+                return cnt;
+            }
+        }
+    }
+
+    @Override
+    /** Outputs the IntList as a String. You are not expected to read
+     * or understand this method. */
+    public String toString() {
+        Formatter out = new Formatter();
+        String sep;
+        sep = "(";
+        int cycleLocation = detectCycles(this);
+        int cnt = 0;
+
+        for (IntList p = this; p != null; p = p.rest) {
+            out.format("%s%d", sep, p.first);
+            sep = ", ";
+
+            cnt++;
+            if ((cnt > cycleLocation) && (cycleLocation > 0)) {
+                out.format("... (cycle exists) ...");
+                break;
+            }
+        }
+        out.format(")");
+        return out.toString();
     }
 }
+
