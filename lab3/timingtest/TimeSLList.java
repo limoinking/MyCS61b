@@ -1,4 +1,5 @@
 package timingtest;
+import edu.princeton.cs.algs4.Stopwatch;
 
 /**
  * Created by hug.
@@ -21,29 +22,30 @@ public class TimeSLList {
     }
 
     public static void timeGetLast() {
-        AList <Integer> ops = new AList<Integer>();
-        AList<Integer> start = new AList<Integer>();
         AList<Integer> Ns = new AList<Integer>();
         AList<Double> times = new AList<Double>();
-        int n = 500;
-
-        for(int i = 1;i <= 8;i++)
-        {
-            n *= 2;
-            ops.addLast(10000);
-            Ns.addLast(n);
-            long starttime = System.currentTimeMillis();
-
-
-            for(int j = 1;j <= n;j++)
-            {
-                start.addLast(i);
+        AList<Integer> opCounts = new AList<Integer>();
+        int M = 10000;
+        for (int i = 1000; i <= 128000; i *= 2 ){
+            Ns.addLast(i);
+            SLList<Integer> testSLList = new SLList<Integer>();
+            for (int j = 0; j < i; j++){
+                testSLList.addLast(i);
             }
-            long end = System.currentTimeMillis();
-            times.addLast((double) (end-starttime)/1000);
+            double startTime = System.currentTimeMillis();
+            int opCount = 0;
+            for (int j = 0; j < M; j++){
+                testSLList.getLast();
+                opCount += 1;
+            }
+            double endTime = System.currentTimeMillis();
+            double time = (endTime - startTime) / 1000;
+            opCounts.addLast(opCount);
+            times.addLast(time);
         }
-        printTimingTable(Ns,times,ops);
-
+        // we must travel all node in SLList to get the last node,
+        // so getlast() is slow in the big SLList
+        printTimingTable(Ns, times, opCounts);
     }
 
 }

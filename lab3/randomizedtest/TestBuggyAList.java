@@ -13,56 +13,59 @@ import static org.junit.Assert.assertEquals;
 public class TestBuggyAList {
   // YOUR TESTS HERE
     @Test
-    public void testThreeAddThreeRemove() {
-        AListNoResizing<Integer> correct = new AListNoResizing<>();
-        BuggyAList<Integer> broken = new BuggyAList<>();
+    public void testThreeAddThreeRemove(){
+        BuggyAList<Integer> buggyAList = new BuggyAList<Integer>();
 
-        correct.addLast(5);
-        correct.addLast(10);
-        correct.addLast(15);
-
-        broken.addLast(5);
-        broken.addLast(10);
-        broken.addLast(15);
-
-        assertEquals(correct.size(), broken.size());
-
-        assertEquals(correct.removeLast(), broken.removeLast());
-        assertEquals(correct.removeLast(), broken.removeLast());
-        assertEquals(correct.removeLast(), broken.removeLast());
-    }
-
-    @Test
-    public void randomizedTest()
-    {
-        AListNoResizing<Integer> correct = new AListNoResizing<>();
-        BuggyAList<Integer> broken = new BuggyAList<>();
-
-        int N = 500;
-        for(int i = 0;i < 500;i += 1)
-        {
-            int optNumber = StdRandom.uniform(0,4);
-            if(optNumber == 0)
-            {
-                int randVal = StdRandom.uniform(0,100);
-                correct.addLast(randVal);
-                broken.addLast(randVal);
-                System.out.println("addLast(" + randVal + ")");
-            }
-            else
-            {
-                if(correct.size() == 0)
-                {
-                    continue;
-                }
-                else
-                {
-                    System.out.println(correct.get(correct.size()-1));
-                    System.out.println(broken.get(broken.size()-1));
-                }
-            }
-
+        // three add
+        for (int i = 4; i < 7; i++){
+            buggyAList.addLast(i);
+        }
+        // three remove one time
+        for (int expected  = 6 ; expected > 3 ; expected--){
+            int actual = buggyAList.removeLast();
+            assertEquals(expected, actual);
         }
     }
 
+    @Test
+    p@Test
+    public void randomizedTest(){
+        AListNoResizing<Integer> LA = new AListNoResizing<Integer>();
+        BuggyAList<Integer> LB = new BuggyAList<Integer>();
+        int N = 5000;
+
+        for (int i = 0; i < N; i += 1) {
+            int operationNumber = StdRandom.uniform(0, 4);
+            if (operationNumber == 0) {
+                // addLast
+                int randVal = StdRandom.uniform(0, 100);
+                // AListNoResizing
+                LA.addLast(randVal);
+                // BuggyAList
+                LB.addLast(randVal);
+            } else if (operationNumber == 1) {
+                // size
+                // AListNoResizing
+                LA.size();
+                // BuggyAList
+                LB.size();
+            }else if (operationNumber == 2){
+                // getLast
+                if (LA.size() != 0){
+                    LA.getLast();
+                }
+                if (LB.size() != 0){
+                    LB.getLast();
+                }
+            } else if (operationNumber == 3) {
+                // removeLast
+                if (LA.size() != 0){
+                    LA.removeLast();
+                }
+                if (LB.size() != 0){
+                    LB.removeLast();
+                }
+            }
+        }
+    }
 }
